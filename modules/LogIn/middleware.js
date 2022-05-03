@@ -4,7 +4,6 @@ const User = require("../../model//users");
 const auth = async (req, res, next) => {
   try {
     const token = req.header("Authorization").split("Bearer ")[1];
-    console.log(token);
     const decoded = jwt.verify(token, "venuepodapi");
     const user = await User.findOne({
       _id: decoded._id,

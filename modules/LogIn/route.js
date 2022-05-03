@@ -2,6 +2,7 @@ const express = require("express");
 const User = require("../../model/users");
 const auth = require("./middleware");
 const router = new express.Router();
+const nodemailer = require("nodemailer");
 
 // GET '/'
 router.get("/", async (req, res) => {
@@ -103,9 +104,36 @@ router.delete("/remove", auth, async (req, res) => {
 router.post("/forgot-password", auth, async (req, res) => {
   try {
     const { email } = req.body;
-    const user = await User.findOne({ email });
-    console.log(user);
-    res.status(200).send({ message: "working" });
+    let transporter = nodemailer.createTransport({
+      service: "gmail",
+      smtp: "smtp.gmail.com",
+      port: 587,
+      auth: {
+        user: "vivoy8981@gmail.com", //replace with your email
+        pass: "Deep@patel18dec", //replace with your password
+      },
+    });
+
+    let mailOptions = {
+      from: "vivoy8981@gmail.com", //replace with your email
+      to: "deep.patel.sa@gmail.com", //replace with your email
+      subject: `Contact name: ${email}`,
+      html: `<h1>Contact details</h1>
+      <h2> email:${email} </h2><br>`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      console.log(info);
+      if (!error) {
+        console.log("Email sent: " + info.response);
+        res.status(200).send({ message: "Sent Successfully" });
+      }
+      res.status(401).send({ error });
+    });
+    // const user = await User.findOne({ email });
+
+    // console.log(user);
+    // res.status(200).send({ message: "working" });
   } catch (error) {
     res.status(401).send({ error });
   }
