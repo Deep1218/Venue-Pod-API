@@ -1,18 +1,15 @@
-const express = require('express')
-require('./config/db-config')
-const { userRouter } = require('./route')
+const express = require("express");
+require("./config/db-config");
 
-const app = express()
+const { userRouter } = require("./route");
 
-const port = process.env.PORT || 8000
+const app = express();
+
+const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
-    console.log('Server is up on port ' + port)
-})
+  console.log("Server is up on port " + port);
+});
 
-app.use(express.json())
-app.use("/users", userRouter)
-
-
-
-const User = require('./model/users')
+app.use(express.json());
+app.use("/users", userRouter);
