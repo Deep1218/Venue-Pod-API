@@ -1,6 +1,6 @@
 const express = require('express')
 require('./config/db-config')
-const { userRouter } = require('./route')
+const { userRouter, venueRouter } = require('./route')
 
 const app = express()
 
@@ -12,7 +12,8 @@ app.listen(port, () => {
 
 app.use(express.json())
 app.use("/users", userRouter)
-
+app.use("/", venueRouter)
 
 
 const User = require('./model/users')
+const Venue = require('./model/venue')

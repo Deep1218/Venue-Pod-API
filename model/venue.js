@@ -77,6 +77,10 @@ const venueSchema = new mongoose.Schema({
     latestBill: {
         type: String,
         required: true
+    },
+    ownerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user"
     }
 
 
