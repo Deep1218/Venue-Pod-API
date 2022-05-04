@@ -1,6 +1,11 @@
 const express = require('express');
 const { route } = require('express/lib/application');
 const Venue = require('../../model/venue')
+    // total venue function
+Venue.countDocuments({}, function(error, count) {
+    console.log(count)
+})
+
 const auth = require('./middleware')
 const router = new express.Router()
 

@@ -1,20 +1,28 @@
 const express = require('express');
 const { route } = require('express/lib/application');
+const { count } = require('../../model/users');
+// total user function
 const User = require('../../model/users')
+User.countDocuments({}, function(error, count) {
+    console.log(count)
+})
+
 const auth = require('./middleware')
 const router = new express.Router()
 
 // GET '/'
 router.get('/', async(req, res) => {
     const user = await User.find({})
+
+    console.log(count);
     res.send(user)
 });
 
 // POST '/register'
+
 router.post('/register', async(req, res) => {
         try {
-            const user = new User(req.body);
-
+            const user = new User(req.body)
             await user.save();
             const token = await user.generateAuthToken();
             res.status(200).send({ user, token });

@@ -41,11 +41,7 @@ const userSchema = new mongoose.Schema({
             type: String,
             required: true,
         },
-    }, ],
-    // venues: [{
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "Venue"
-    // }]
+    }]
 });
 
 userSchema.methods.generateAuthToken = async function() {
