@@ -81,7 +81,17 @@ const venueSchema = new mongoose.Schema({
     ownerId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "user"
+    },
+    feedback: [{
+        feedbackusername: { type: String },
+        feedbackvalue: { type: Number },
+        feedbacktext: { type: String }
+    }],
+    coardinates: {
+        latitude: { type: String, required: true },
+        longitude: { type: String, required: true }
     }
+
 
 
 });

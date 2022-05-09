@@ -29,6 +29,7 @@ router.post('/', auth, async(req, res) => {
         const venue = new Venue(req.body);
         venue.ownerId = req.user._id
         await venue.save();
+        console.log(`https://maps.google.com/?q=${venue.coardinates.latitude},${venue.coardinates.longitude}`);
         res.status(200).send({ venue });
 
     } catch (error) {
@@ -55,6 +56,38 @@ router.patch('/:id', auth, async(req, res) => {
         res.status(400).send(e)
     }
 })
+
+
+// feedback adding
+router.post('/feedback/:id', auth, async(req, res) => {
+    try {
+        const venue = await Venue.findById(req.params.id)
+        const obj = {
+            feedbackusername: req.user.name,
+            feedbackvalue: req.body.feedbackvalue,
+            feedbacktext: req.body.feedbacktext
+        }
+        venue.feedback.push(obj)
+        await venue.save()
+
+        res.send(venue)
+
+    } catch (error) {
+        console.log(error);
+        res.send(error)
+    }
+})
+
+// get feedback
+router.get('/feedback/:id', async(req, res) => {
+
+    const venue = await Venue.findById(req.params.id)
+        // console.log(venue.forEach)
+    res.send(venue.feedback)
+
+});
+
+
 
 router.delete('/:id', auth, async(req, res) => {
     try {
