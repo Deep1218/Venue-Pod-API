@@ -104,36 +104,38 @@ router.delete("/remove", auth, async (req, res) => {
 router.post("/forgot-password", auth, async (req, res) => {
   try {
     const { email } = req.body;
+    const user = await User.findOne({ email });
+
     let transporter = nodemailer.createTransport({
       service: "gmail",
-      smtp: "smtp.gmail.com",
+      host: "smtp.gmail.com",
       port: 587,
+      secure: false,
       auth: {
-        user: "vivoy8981@gmail.com", //replace with your email
-        pass: "Deep@patel18dec", //replace with your password
+        user: process.env.AUTH_EMAIL,
+        pass: process.env.AUTH_PASS,
+      },
+      tls: {
+        rejectUnauthorized: false,
       },
     });
 
     let mailOptions = {
-      from: "vivoy8981@gmail.com", //replace with your email
-      to: "deep.patel.sa@gmail.com", //replace with your email
+      from: process.env.AUTH_EMAIL,
+      to: "vivoy8981@gmail.com",
       subject: `Contact name: ${email}`,
       html: `<h1>Contact details</h1>
       <h2> email:${email} </h2><br>`,
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
-      console.log(info);
       if (!error) {
+        console.log(info);
         console.log("Email sent: " + info.response);
         res.status(200).send({ message: "Sent Successfully" });
       }
-      res.status(401).send({ error });
+      res.status(400).send({ error });
     });
-    // const user = await User.findOne({ email });
-
-    // console.log(user);
-    // res.status(200).send({ message: "working" });
   } catch (error) {
     res.status(401).send({ error });
   }
