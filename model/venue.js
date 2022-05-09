@@ -12,8 +12,6 @@ const venueSchema = new mongoose.Schema({
         required: true,
         trim: true,
     },
-
-
     buisnessEmail: {
         type: String,
         unique: true,
@@ -83,20 +81,15 @@ const venueSchema = new mongoose.Schema({
         ref: "user"
     },
     feedback: [{
-        feedbackusername: { type: String },
-        feedbackvalue: { type: Number },
-        feedbacktext: { type: String }
+        feedbackUsername: { type: String },
+        feedbackValue: { type: Number },
+        feedbackText: { type: String }
     }],
     coardinates: {
         latitude: { type: String, required: true },
         longitude: { type: String, required: true }
     }
-
-
-
 });
-
-
 
 const Venue = mongoose.model('Venue', venueSchema);
 module.exports = Venue;
