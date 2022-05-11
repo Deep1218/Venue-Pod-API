@@ -1,4 +1,5 @@
 const express = require("express");
+const morgan = require("morgan");
 require("./config/db-config");
 
 const { userRouter } = require("./route");
@@ -12,4 +13,6 @@ app.listen(port, () => {
 });
 
 app.use(express.json());
+app.use(morgan("dev"));
+app.use(express.urlencoded({ extended: true }));
 app.use("/users", userRouter);

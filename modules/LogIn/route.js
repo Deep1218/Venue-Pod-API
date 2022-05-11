@@ -6,8 +6,12 @@ const nodemailer = require("nodemailer");
 
 // GET '/'
 router.get("/", async (req, res) => {
-  const user = await User.find({});
-  res.send(user);
+  try {
+    const users = await User.find({});
+    res.status(200).send(users);
+  } catch (error) {
+    res.status(500).send({ error });
+  }
 });
 
 // POST '/register'
@@ -26,7 +30,6 @@ router.post("/register", async (req, res) => {
 // login
 router.post("/login", async (req, res) => {
   try {
-    console.log("Working");
     const user = await User.findByCredentials(
       req.body.email,
       req.body.password
@@ -39,7 +42,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// Logout
+// POST Logout
 router.post("/logout", auth, async (req, res) => {
   try {
     req.user.tokens = req.user.tokens.filter((token) => {
@@ -47,7 +50,7 @@ router.post("/logout", auth, async (req, res) => {
     });
     await req.user.save();
 
-    res.status(200).send("logout");
+    res.status(200).send({ meesage: "logout" });
   } catch (error) {
     res.status(400).send({ error });
   }
@@ -65,7 +68,7 @@ router.post("/logoutAll", auth, async (req, res) => {
 });
 
 // PATCH '/me'
-router.patch("/me", auth, async (req, res) => {
+router.patch("/user", auth, async (req, res) => {
   const updates = Object.keys(req.body);
 
   const allowedUpdates = ["name", "email", "mobileNumber", "password"];
@@ -130,7 +133,6 @@ router.post("/forgot-password", auth, async (req, res) => {
 
     transporter.sendMail(mailOptions, (error, info) => {
       if (!error) {
-        console.log(info);
         console.log("Email sent: " + info.response);
         res.status(200).send({ message: "Sent Successfully" });
       }
