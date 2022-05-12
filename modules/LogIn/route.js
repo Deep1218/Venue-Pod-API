@@ -1,9 +1,10 @@
 const express = require("express");
 const User = require("../../model/users");
 const auth = require("./middleware");
-const router = new express.Router();
-const nodemailer = require("nodemailer");
+const { setMail, transporter } = require("./uitils");
+const crypto = require("crypto");
 
+const router = new express.Router();
 // GET '/'
 router.get("/", async (req, res) => {
   try {
@@ -104,39 +105,34 @@ router.delete("/remove", auth, async (req, res) => {
 //Deep Patel's work starts from here.
 
 //Forgot password end point
-router.post("/forgot-password", auth, async (req, res) => {
+router.post("/password-reset", auth, async (req, res) => {
   try {
     const { email } = req.body;
     const user = await User.findOne({ email });
 
-    let transporter = nodemailer.createTransport({
-      service: "gmail",
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false,
-      auth: {
-        user: process.env.AUTH_EMAIL,
-        pass: process.env.AUTH_PASS,
-      },
-      tls: {
-        rejectUnauthorized: false,
-      },
-    });
+    if (!user) {
+      res.staus(400).send({ message: "Invalid User" });
+    }
 
-    let mailOptions = {
-      from: process.env.AUTH_EMAIL,
-      to: "vivoy8981@gmail.com",
-      subject: `Contact name: ${email}`,
-      html: `<h1>Contact details</h1>
-      <h2> email:${email} </h2><br>`,
-    };
+    // generating reset token
+    const token = crypto.randomBytes(32).toString("hex");
 
-    transporter.sendMail(mailOptions, (error, info) => {
+    // setting mail format
+    const mail = setMail(
+      email,
+      "Reset Your Password",
+      `${process.env.BASE_URL}/password-rest/${token}`
+    );
+
+    // sending mail
+    transporter.sendMail(mail, (error, info) => {
       if (!error) {
+        console.log(info);
         console.log("Email sent: " + info.response);
         res.status(200).send({ message: "Sent Successfully" });
+      } else {
+        res.status(400).send({ error });
       }
-      res.status(400).send({ error });
     });
   } catch (error) {
     res.status(401).send({ error });
