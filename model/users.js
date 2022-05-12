@@ -9,7 +9,6 @@ const userSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-
   email: {
     type: String,
     unique: true,
@@ -44,15 +43,18 @@ const userSchema = new mongoose.Schema({
       },
     },
   ],
+  resetToken: {
+    type: String,
+    trim: true,
+    default: "false",
+  },
 });
 
 userSchema.methods.generateAuthToken = async function () {
   const user = this;
-
   const token = jwt.sign({ _id: user._id.toString() }, "venuepodapi");
 
   user.tokens = user.tokens.concat({ token });
-
   await user.save();
 
   return token;

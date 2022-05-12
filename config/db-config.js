@@ -11,5 +11,3 @@ mongoose
   .catch((error) => {
     console.log("connectoion failed", error);
   });
-
-console.log(process.env.PORT);

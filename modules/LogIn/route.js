@@ -5,6 +5,7 @@ const { setMail, transporter } = require("./uitils");
 const crypto = require("crypto");
 
 const router = new express.Router();
+
 // GET '/'
 router.get("/", async (req, res) => {
   try {
@@ -104,7 +105,7 @@ router.delete("/remove", auth, async (req, res) => {
 
 //Deep Patel's work starts from here.
 
-//Forgot password end point
+// Forgot password end point
 router.post("/password-reset", auth, async (req, res) => {
   try {
     const { email } = req.body;
@@ -116,24 +117,50 @@ router.post("/password-reset", auth, async (req, res) => {
 
     // generating reset token
     const token = crypto.randomBytes(32).toString("hex");
+    console.log(token);
+    user.resetToken = token;
+    await user.save();
 
     // setting mail format
     const mail = setMail(
-      email,
+      email, // TODO change this after testing
       "Reset Your Password",
-      `${process.env.BASE_URL}/password-rest/${token}`
+      `${process.env.BASE_URL}/users/password-reset/${user._id}/${token}`
     );
 
     // sending mail
     transporter.sendMail(mail, (error, info) => {
-      if (!error) {
-        console.log(info);
-        console.log("Email sent: " + info.response);
-        res.status(200).send({ message: "Sent Successfully" });
-      } else {
-        res.status(400).send({ error });
+      if (error) {
+        res.status(401).send({ error });
       }
+      res.status(200).send({ message: "Sent Successfully" });
     });
+  } catch (error) {
+    res.status(400).send({ error });
+  }
+});
+
+// Reset password end point
+router.post("/password-reset/:userId/:token", auth, async (req, res) => {
+  try {
+    const { userId, token } = req.params;
+
+    const user = await User.findOne({
+      _id: userId,
+      resetToken: token,
+    });
+
+    if (!user) {
+      res.staus(400).send({ message: "Invalid User or Token" });
+    }
+
+    // update user
+    user.password = req.body.password;
+    user.resetToken = "false";
+    user.tokens = [];
+    await user.save();
+
+    res.status(200).send({ message: "Password has been changed" });
   } catch (error) {
     res.status(401).send({ error });
   }

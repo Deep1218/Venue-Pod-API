@@ -13,7 +13,7 @@ let transporter = nodemailer.createTransport({
     rejectUnauthorized: false,
   },
 });
-console.log(process.env.AUTH_PASS);
+
 let html = `<html lang="en">
 <head>
   <style>
