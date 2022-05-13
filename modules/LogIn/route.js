@@ -7,9 +7,8 @@ const crypto = require("crypto");
 const router = new express.Router();
 
 // total user function
-const User = require("../../model/users");
 User.countDocuments({}, function (error, count) {
-  console.log(count);
+  //   console.log(count);
 });
 
 // GET '/'
@@ -104,12 +103,10 @@ router.delete("/remove", auth, async (req, res) => {
   try {
     await req.user.remove();
     res.status(200).send(req.user);
-  } catch (e) {
-    res.status(400).send(e);
+  } catch (error) {
+    res.status(400).send(error);
   }
 });
-
-//Deep Patel's work starts from here.
 
 // Forgot password end point
 router.post("/password-reset", auth, async (req, res) => {
@@ -139,7 +136,11 @@ router.post("/password-reset", auth, async (req, res) => {
       if (error) {
         res.status(401).send({ error });
       }
-      res.status(200).send({ message: "Sent Successfully" });
+      res.status(200).send({
+        message: "Sent Successfully",
+        userId: user._id, //TODO remove this after testing
+        resetToken: token, //TODO remove this after testing
+      });
     });
   } catch (error) {
     res.status(400).send({ error });
@@ -163,7 +164,7 @@ router.post("/password-reset/:userId/:token", auth, async (req, res) => {
     // update user
     user.password = req.body.password;
     user.resetToken = "false";
-    user.tokens = [];
+    //TODO uncomment this after testing user.tokens = [];
     await user.save();
 
     res.status(200).send({ message: "Password has been changed" });
