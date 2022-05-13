@@ -1,11 +1,13 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+require("dotenv").config();
 
-const url = "mongodb+srv://venue_pod:i81mhYnjAdsAnHa0@cluster0.sh7pu.mongodb.net/venuepod?retryWrites=true&w=majority"
+const url = process.env.DATABASE;
 
-
-
-mongoose.connect(url).then(() => {
-    console.log('connection successfull');
-}).catch((error) => {
-    console.log('connectoion failed', error);
-})
+mongoose
+  .connect(url)
+  .then(() => {
+    console.log("connection successfull");
+  })
+  .catch((error) => {
+    console.log("connectoion failed", error);
+  });
